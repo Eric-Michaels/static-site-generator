@@ -1,5 +1,6 @@
 from textnode import TextNode
 from htmlnode import HTMLNode, LeafNode, ParentNode
+from splitnodes import split_nodes_delimiter
 
 def main():
     
@@ -14,6 +15,9 @@ def main():
 
     parentnode = ParentNode("div", [leafnode], {"class": "container"})
     print(parentnode.to_html())
+
+    split_nodes_delimiter([TextNode("Hello", "text"), TextNode("world", "bold")], "*", "italic")
+    print(split_nodes_delimiter([TextNode("Hello", "text"), TextNode("world", "bold")], "*", "italic"))
 
 # Using the special variable 
 # __name__
