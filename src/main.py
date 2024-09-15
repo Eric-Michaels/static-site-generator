@@ -1,5 +1,5 @@
 from textnode import TextNode
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 def main():
     
@@ -8,6 +8,12 @@ def main():
 
     htmlnode = HTMLNode(props = {"href": "https://www.google.com", "target": "_blank"})
     print(htmlnode.props_to_html())
+
+    leafnode = LeafNode("Link to boot.dev", "a", {"href": "https://www.boot.dev"})
+    print(leafnode.to_html())
+
+    parentnode = ParentNode("div", [leafnode], {"class": "container"})
+    print(parentnode.to_html())
 
 # Using the special variable 
 # __name__
