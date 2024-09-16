@@ -1,69 +1,68 @@
 import unittest
-from textnode import TextNode, text_node_to_html_node, TextType
-from htmlnode import LeafNode, ParentNode
+
+from textnode import (
+    TextNode,
+    text_type_text,
+    text_type_bold,
+    text_type_italic,
+    text_type_code,
+    text_type_image,
+    text_type_link,
+    text_node_to_html_node,
+)
+
 
 class TestTextNode(unittest.TestCase):
-
     def test_eq(self):
-        node = TextNode("This is a text node", "bold")
-        node2 = TextNode("This is a text node", "bold")
+        node = TextNode("This is a text node", text_type_text)
+        node2 = TextNode("This is a text node", text_type_text)
         self.assertEqual(node, node2)
 
-    def test_url_default_none(self):
-        node = TextNode("This is a text node", "bold")
-        self.assertEqual(node.url, None)
-    
-    def test_neq_different_text(self):
-        node = TextNode("This is a text node", "bold")
-        node2 = TextNode("This is another text node", "bold")
+    def test_eq_false(self):
+        node = TextNode("This is a text node", text_type_text)
+        node2 = TextNode("This is a text node", text_type_bold)
         self.assertNotEqual(node, node2)
 
-    def test_neq_different_text_type(self):
-        node = TextNode("This is a text node", "bold")
-        node2 = TextNode("This is a text node", "italic")
+    def test_eq_false2(self):
+        node = TextNode("This is a text node", text_type_text)
+        node2 = TextNode("This is a text node2", text_type_text)
         self.assertNotEqual(node, node2)
-    
+
+    def test_eq_url(self):
+        node = TextNode("This is a text node", text_type_text, "https://www.boot.dev")
+        node2 = TextNode("This is a text node", text_type_text, "https://www.boot.dev")
+        self.assertEqual(node, node2)
+
     def test_repr(self):
-        node = TextNode("This is a text node", "bold")
-        self.assertEqual(repr(node), "TextNode(This is a text node, bold, None)")
+        node = TextNode("This is a text node", text_type_text, "https://www.boot.dev")
+        self.assertEqual(
+            "TextNode(This is a text node, text, https://www.boot.dev)", repr(node)
+        )
 
 
-class TestTextToHTML(unittest.TestCase):
-    def test_text_node_to_html_node_text(self):
-        node = TextNode("Hello", TextType.text)
+class TestTextNodeToHTMLNode(unittest.TestCase):
+    def test_text(self):
+        node = TextNode("This is a text node", text_type_text)
         html_node = text_node_to_html_node(node)
-        self.assertIsInstance(html_node, LeafNode)
-        self.assertEqual(html_node.to_html(), "Hello")
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
 
-    def test_text_node_to_html_node_bold(self):
-        node = TextNode("Hello", TextType.bold)
+    def test_image(self):
+        node = TextNode("This is an image", text_type_image, "https://www.boot.dev")
         html_node = text_node_to_html_node(node)
-        self.assertIsInstance(html_node, ParentNode)
-        self.assertEqual(html_node.to_html(), "<b>Hello</b>")
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertEqual(
+            html_node.props,
+            {"src": "https://www.boot.dev", "alt": "This is an image"},
+        )
 
-    def test_text_node_to_html_node_italic(self):
-        node = TextNode("Hello", TextType.italic)
+    def test_bold(self):
+        node = TextNode("This is bold", text_type_bold)
         html_node = text_node_to_html_node(node)
-        self.assertIsInstance(html_node, ParentNode)
-        self.assertEqual(html_node.to_html(), "<i>Hello</i>")
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is bold")
 
-    def test_text_node_to_html_node_code(self):
-        node = TextNode("Hello", TextType.code)
-        html_node = text_node_to_html_node(node)
-        self.assertIsInstance(html_node, ParentNode)
-        self.assertEqual(html_node.to_html(), "<code>Hello</code>")
-
-    def test_text_node_to_html_node_link(self):
-        node = TextNode("Hello", TextType.link, url="http://example.com")
-        html_node = text_node_to_html_node(node)
-        self.assertIsInstance(html_node, ParentNode)
-        self.assertEqual(html_node.to_html(), '<a href="http://example.com">Hello</a>')
-
-    def test_text_node_to_html_node_image(self):
-        node = TextNode("Image", TextType.image, url="http://example.com/image.png")
-        html_node = text_node_to_html_node(node)
-        self.assertIsInstance(html_node, LeafNode)
-        self.assertEqual(html_node.to_html(), '<img src="http://example.com/image.png" alt="Image"></img>')
 
 if __name__ == "__main__":
     unittest.main()
