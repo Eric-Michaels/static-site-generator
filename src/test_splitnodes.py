@@ -23,7 +23,6 @@ class TestSplitNodes(unittest.TestCase):
     def test_delim_bold(self):
         node = TextNode("This is text with a **bolded** word", text_type_text)
         new_nodes = split_nodes_delimiter([node], "**", text_type_bold)
-        print(f"new_nodes: {new_nodes}")
         self.assertListEqual(
             [
                 TextNode("This is text with a ", text_type_text),
